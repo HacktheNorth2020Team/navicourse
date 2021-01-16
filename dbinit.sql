@@ -16,4 +16,4 @@ IMPORT TABLE navicourse.courses (
     link STRING,
     source STRING
 ) 
-CSV DATA ('<Insert Link Here>.csv');
+CSV DATA ('csv course files/Udacity.csv');

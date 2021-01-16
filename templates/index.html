@@ -1,3 +1,16 @@
 {% extends 'base.html' %}
 {% block content %}
+
+<table>
+    {% for rec in recs %}
+       <tr>
+            <th> {{ rec[0] }} </th>
+            <td> {{ rec[1] }} </td>
+            <td> {{ rec[2] }} </td>
+       </tr>
+    {% endfor %}
+</table>
+
+
+
 {% endblock content %}
