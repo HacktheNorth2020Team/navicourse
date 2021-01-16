@@ -16,9 +16,9 @@ def about():
 
 @app.route("/login")
 def login():
-    return render_template("index.html")
+    return render_template("login/index.html")
 
 
 @app.route("/register")
 def register():
-    return render_template("index.html")
+    return render_template("register/index.html")
