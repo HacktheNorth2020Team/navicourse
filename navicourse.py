@@ -1,11 +1,17 @@
-from flask import Flask, render_template, url_for
+from flask import Flask, render_template, url_for, request, flash, \
+     redirect, abort, session
+from flask_sqlalchemy import SQLAlchemy
+import sqlalchemy.orm
+from sqlalchemy import create_engine
+from cockroachdb.sqlalchemy import run_transaction
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
 import os
 app = Flask(__name__)
-
-
+app.config.from_pyfile('config.cfg')
+db = SQLAlchemy(app)
+sessionmaker = sqlalchemy.orm.sessionmaker(db.engine)
 
 # Read the dataset
 ds = pd.read_csv(os.path.join("csv course files", "Udacity.csv"))
@@ -40,21 +46,26 @@ def recommend(item_id, num):
     for rec in recs:
         print("Recommended: " + item(rec[1]) + " (score:" + str(rec[0]) + ")")
     return recs
-    
 
-
+class Courses(db.Model):
+    __tablename__ = 'courses'
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String())
+    description = db.Column(db.String())
+    rating = db.Column(db.String())
+    link = db.Column(db.String())
+    source = db.Column(db.String())
 
 @app.route("/")
 def home():
-    recs = recommend(2, 5)
+    print(Courses.query.filter_by(source='Udacity').all()[1])
+    recs = Courses.query.filter_by(source='Udacity').all()
     return render_template("index.html", recs=recs)
-
 
 
 @app.route("/about")
 def about():
     return render_template("index.html")
-
 
 
 @app.route("/login")
