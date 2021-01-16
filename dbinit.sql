@@ -6,14 +6,16 @@ CREATE TABLE navicourse.ratings (
     user_id UUID PRIMARY KEY,
     course_id INT8,
     rating FLOAT8
-)
+);
 
-IMPORT TABLE navicourse.courses (
-    course_id UUID PRIMARY KEY,
+CREATE TABLE navicourse.courses (
+    id INT8 PRIMARY KEY,
     title STRING,
     description STRING,
-    rating INT8,
+    rating STRING,
     link STRING,
     source STRING
-) 
-CSV DATA ('csv course files/Udacity.csv');
+);
+
+\| cat Udacity.sql
+\| cat Harvard.sql
