@@ -110,27 +110,18 @@ def GetCourseInProgress(session, u_id):
 
 @app.route("/")
 def home():
-    print(Courses.query.filter_by(source='Udacity').all()[1])	    values = query(-1, '')
-    recs = recommend(2,5)	    return render_template("index.html", recs=values['recs'], user_id=values['user_id'])
-    return render_template("index.html", recs=recs)	
+    values = query(-1, '')
+    return render_template("index.html", recs=values['recs'], user_id=values['user_id'])
 
 
-@app.route("/about")	
-def about():	
-    return render_template("index.html")	
-
-
-
-@app.route("/login")	@app.route("/", methods=['POST'])
-def login():	def login():
-    return render_template("login/index.html")	    data = json.loads(request.form['data'])
-
+@app.route("/", methods=['POST'])
+def login():
+    data = json.loads(request.form['data'])
     user_id = data['id']
-
     name = data['name']
-@app.route("/register")	    values = query(user_id, name)
-def register():	    if values == None:
-    return render_template("register/index.html")	        #AddUser(session, user_id, name)
+    values = query(user_id, name)
+    if values == None:
+        #AddUser(session, user_id, name)
         #return render_template("initialize/index.html", user_id=user_id, name=name)
         return render_template("index.html", recs=values['recs'], user_id=values['user_id'])
     return render_template("index.html", recs=values['recs'], user_id=values['user_id'])
@@ -150,4 +141,4 @@ def query(user_id, name):
         'user': user,
         'user_id': user_id
     }
-    return values
+    return values 
