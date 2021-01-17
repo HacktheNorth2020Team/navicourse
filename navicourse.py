@@ -35,13 +35,22 @@ for idx, row in ds.iterrows():
 # Return item name
 def item(id):
     row = ds.loc[id]
-    return row['title']
+    course = {
+        'id': row['id'],
+        'title': row['title'],
+        'description': row['description'],
+        'rating': row['rating'],
+        'link': row['link'],
+        'source': row['source']
+    }
+    return course
 
 # Recommend items based on similarity
 def recommend(item_id, num):
     recs = results[item_id][:num]
     for rec in recs:
-        print("Recommended: " + item(rec[1]) + " (score:" + str(rec[0]) + ")")
+        print(item(rec[1]))
+        #print("Recommended: " + item(rec[1]) + " (score:" + str(rec[0]) + ")")
     return recs
 
 
@@ -110,35 +119,35 @@ def GetCourseInProgress(session, u_id):
 
 @app.route("/")
 def home():
-    values = query(-1, '')
-    return render_template("index.html", recs=values['recs'], user_id=values['user_id'])
-
+    recs = query('')
+    return render_template("index.html", recs=recs, user_id=-1)
 
 @app.route("/", methods=['POST'])
 def login():
     data = json.loads(request.form['data'])
     user_id = data['id']
     name = data['name']
-    values = query(user_id, name)
-    if values == None:
+    recs = query('')
+    if user_id == -1:
+        return render_template("index.html", recs=recs, user_id=-1)
+    if Users.query.get(user_id) == None:
         #AddUser(session, user_id, name)
         #return render_template("initialize/index.html", user_id=user_id, name=name)
-        return render_template("index.html", recs=values['recs'], user_id=values['user_id'])
-    return render_template("index.html", recs=values['recs'], user_id=values['user_id'])
+        return render_template("index.html", recs=recs, user_id=user_id)
+    return render_template("index.html", recs=recs, user_id=user_id)
 
 @app.route("/initialize")
 def initialize():
     return render_template("initialize/index.html")
 
-def query(user_id, name):
-    user = Users.query.get(user_id)
-    if user == None:
-        return None
+def query(q):
     print(Courses.query.filter_by(source='Udacity').all()[1])
-    recs = recommend(2,5)
-    values = {
-        'recs': recs,
-        'user': user,
-        'user_id': user_id
-    }
-    return values 
+    #recs = recommend(2,5)
+    recs = []
+    courses = results[1][:25]
+    for course in courses:
+        #obj = item(course[1])
+        #if q in obj['title'] or q in obj['description']:
+
+        recs.append(item(course[1]))
+    return recs

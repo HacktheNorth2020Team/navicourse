@@ -6,9 +6,6 @@
 {% if user_id == -1 %}
 <div class="d-flex justify-content-center mt-5">
     <div class="card text-center" style="width:350px">
-        <div class="card-header">
-            Welcome to navicourse!
-        </div>
         <div class="card-body">
             <div class="fb-login-button" data-width="" data-size="large" data-button-type="continue_with" data-layout="default"
                  data-auto-logout-link="false" data-use-continue-as="false" onlogin="checkLoginState();"></div>
@@ -23,33 +20,36 @@
 <div class="row mt-5">
     <div class="col-xl-1"></div>
     <div class="col-xl-10">
-        <div class="input-group">
+        <!--<div class="input-group">
             <input type="search" class="form-control" placeholder="Search for courses">
             <div class="input-group-append">
                 <button class="btn btn-primary" type="button">
                     <i class="fa fa-search"></i>
                 </button>
             </div>
-        </div>
+        </div>-->
+        <table class="table table-info table-hover">
+            {% for rec in recs %}
+            <tr>
+                <th>
+                    <a href="{{ rec['link'] }}">{{ rec['title'] }}</a>
+                </th>
+                <td>{{ rec['description'] }}</td>
+                <!--<td>{{ rec['rating'] }}</td>-->
+                <td>{{ rec['source'] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
     </div>
 </div>
 <div class="col-xl-1"></div>
 {% endif %}
 
-<table>
-    {% for rec in recs %}
-    <tr>
-        <th> {{ rec[0] }} </th>
-        <th> {{ rec[0] }} </th>
-        <td> {{ rec[1] }} </td>
-        <td> {{ rec[1] }} </td>
-        <td> {{ rec[2] }} </td>
-        <td> {{ rec[2] }} </td>
-    </tr>
-    {% endfor %}
-</table>
-
 <script>
+
+</script>
+
+<script type="text/javascript">
     window.fbAsyncInit = function () {
         FB.init({
             appId: '2758841357663568',
@@ -74,12 +74,19 @@
         }
     }
 
-
     function api() {                            // Gets id and name of the user.
         FB.api('/me', function (response) {
             console.log(response);
             document.getElementById('data').value = JSON.stringify(response);
-            document.forms[0].submit()
+            document.forms[0].submit();
+        });
+    }
+
+    function logout() {
+        FB.logout(function () {
+            var data = { name: '', id: -1 };
+            document.getElementById('data').value = JSON.stringify(data);
+            document.forms[0].submit();
         });
     }
 </script>
