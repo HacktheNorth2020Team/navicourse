@@ -4,6 +4,8 @@ from flask_sqlalchemy import SQLAlchemy
 import sqlalchemy.orm
 from sqlalchemy import create_engine
 from cockroachdb.sqlalchemy import run_transaction
+from sqlalchemy.dialects.postgresql import UUID
+import uuid
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
@@ -47,14 +49,34 @@ def recommend(item_id, num):
         print("Recommended: " + item(rec[1]) + " (score:" + str(rec[0]) + ")")
     return recs
 
+
 class Courses(db.Model):
     __tablename__ = 'courses'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.BigInteger, primary_key=True)
     title = db.Column(db.String())
     description = db.Column(db.String())
     rating = db.Column(db.String())
     link = db.Column(db.String())
     source = db.Column(db.String())
+
+class Users(db.Model):
+    __tablename__ = 'users'
+    user_id = db.Column(db.BigInteger, primary_key=True)
+    name = db.Column(db.String())
+
+class Ratings(db.Model):
+    __tablename__ = 'ratings'
+    id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True)
+    user_id = db.Column(db.BigInteger)
+    course_id = db.Column(db.BigInteger)
+    rating = db.Column(db.Float)
+
+class CoursesInProgress(db.Model):
+    __tablename__ = 'courses_in_progress'
+    id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True)
+    user_id = db.Column(db.BigInteger)
+    course_id = db.Column(db.BigInteger)
+
 
 @app.route("/")
 def home():
