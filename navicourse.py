@@ -1,4 +1,7 @@
 from flask import Flask, render_template, url_for
+from flask_wtf import FlaskForm
+from wtforms.validators import DataRequired
+
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
@@ -29,16 +32,12 @@ for idx, row in ds.iterrows():
 def item(id):
     row = ds.loc[id]
     return row['title']
-    # return 
-    # ds.loc[ds['id'] == id]['description'].tolist()[0].split(' - ')[0]
 
 # Recommend items based on similarity
 def recommend(item_id, num):
     print("Recommending " + str(num) + " products similar to " + item(item_id) + "...")
     print("-------")
     recs = results[item_id][:num]
-    for rec in recs:
-        print("Recommended: " + item(rec[1]) + " (score:" + str(rec[0]) + ")")
     return recs
     
 
@@ -46,7 +45,10 @@ def recommend(item_id, num):
 
 @app.route("/")
 def home():
+    
+    
     recs = recommend(2, 5)
+
     return render_template("index.html", recs=recs)
 
 

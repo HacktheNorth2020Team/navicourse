@@ -1,3 +1,4 @@
+{% import "bootstrap/wtf.html" as wtf %}
 {% extends 'base.html' %}
 {% block content %}
 
@@ -13,4 +14,18 @@
 
 
 
+<div class="row mt-5">
+    <div class="col-xl-1"></div>
+    <div class="col-xl-10">
+        <div class="input-group">
+            <input type="search" class="form-control" placeholder="Search for courses">
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="button">
+                    <i class="fa fa-search"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-1"></div>
+</div>
 {% endblock content %}
