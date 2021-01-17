@@ -3,9 +3,21 @@ DROP DATABASE IF EXISTS navicourse CASCADE;
 CREATE DATABASE navicourse;
 
 CREATE TABLE navicourse.ratings (
-    user_id UUID PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id INT8,
     course_id INT8,
     rating FLOAT8
+);
+
+CREATE TABLE navicourse.courses_in_progress (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id INT8,
+    course_id INT8
+);
+
+CREATE TABLE navicourse.users (
+    user_id INT8 PRIMARY KEY,
+    name STRING
 );
 
 CREATE TABLE navicourse.courses (
