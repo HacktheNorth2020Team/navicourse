@@ -1,6 +1,25 @@
 {% extends 'base.html' %}
 {% block content %}
 
+<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
+
+{% if user_id == -1 %}
+<div class="d-flex justify-content-center mt-5">
+    <div class="card text-center" style="width:350px">
+        <div class="card-header">
+            Welcome to navicourse!
+        </div>
+        <div class="card-body">
+            <div class="fb-login-button" data-width="" data-size="large" data-button-type="continue_with" data-layout="default"
+                 data-auto-logout-link="false" data-use-continue-as="false" onlogin="checkLoginState();"></div>
+        </div>
+    </div>
+</div>
+<form action="{{ url_for('login') }}" method="post" class="d-none">
+    <input type="text" id="data" name="data">
+    <input type="submit">
+</form>
+{% else %}
 <div class="row mt-5">
     <div class="col-xl-1"></div>
     <div class="col-xl-10">
@@ -15,17 +34,50 @@
     </div>
     <div class="col-xl-1"></div>
 </div>
+{% endif %}
 
 <table>
     {% for rec in recs %}
-       <tr>
-            <th> {{ rec[0] }} </th>
-            <td> {{ rec[1] }} </td>
-            <td> {{ rec[2] }} </td>
-       </tr>
+    <tr>
+        <th> {{ rec[0] }} </th>
+        <td> {{ rec[1] }} </td>
+        <td> {{ rec[2] }} </td>
+    </tr>
     {% endfor %}
 </table>
 
+<script>
+    window.fbAsyncInit = function () {
+        FB.init({
+            appId: '2758841357663568',
+            cookie: true,
+            xfbml: true,
+            version: 'v9.0'
+        });
+        FB.getLoginStatus(function (response) {  // Called after the JS SDK has been initialized.
+            statusChangeCallback(response);      // Returns the login status.
+        });
+    };
 
+    function checkLoginState() {                 // Called when the user is finished with the Login Button.
+        FB.getLoginStatus(function (response) {
+            statusChangeCallback(response);
+        });
+    }
+
+    function statusChangeCallback(response) {   // Called with the results from FB.getLoginStatus().
+        if (response.status === 'connected') {  // Logged into your webpage and Facebook.
+            api();
+        }
+    }
+
+    function api() {                            // Gets id and name of the user.
+        FB.api('/me', function (response) {
+            console.log(response);
+            document.getElementById('data').value = JSON.stringify(response);
+            document.forms[0].submit()
+        });
+    }
+</script>
 
 {% endblock content %}

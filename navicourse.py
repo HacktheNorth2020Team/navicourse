@@ -10,6 +10,7 @@ import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
 import os
+import json
 app = Flask(__name__)
 app.config.from_pyfile('config.cfg')
 db = SQLAlchemy(app)
@@ -109,21 +110,34 @@ def GetCourseInProgress(session, u_id):
 
 @app.route("/")
 def home():
+    values = query(-1, '')
+    return render_template("index.html", recs=values['recs'], user_id=values['user_id'])
+
+@app.route("/", methods=['POST'])
+def login():
+    data = json.loads(request.form['data'])
+    user_id = data['id']
+    name = data['name']
+    values = query(user_id, name)
+    if values == None:
+        #AddUser(session, user_id, name)
+        #return render_template("initialize/index.html", user_id=user_id, name=name)
+        return render_template("index.html", recs=values['recs'], user_id=values['user_id'])
+    return render_template("index.html", recs=values['recs'], user_id=values['user_id'])
+
+@app.route("/initialize")
+def initialize():
+    return render_template("initialize/index.html")
+
+def query(user_id, name):
+    user = Users.query.get(user_id)
+    if user == None:
+        return None
     print(Courses.query.filter_by(source='Udacity').all()[1])
     recs = recommend(2,5)
-    return render_template("index.html", recs=recs)
-
-
-@app.route("/about")
-def about():
-    return render_template("index.html")
-
-
-@app.route("/login")
-def login():
-    return render_template("login/index.html")
-
-
-@app.route("/register")
-def register():
-    return render_template("register/index.html")
+    values = {
+        'recs': recs,
+        'user': user,
+        'user_id': user_id
+    }
+    return values
