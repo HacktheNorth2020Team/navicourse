@@ -24,8 +24,6 @@ tfidf_matrix = tf.fit_transform(ds['description'])
 # Cosine Similarities, compares each entry with another with a score
 cosine_similarities = linear_kernel(tfidf_matrix, tfidf_matrix)
 results = {}
-for key in results:
-    print(results[key])
 
 # Sort by similarity
 for idx, row in ds.iterrows():
@@ -37,13 +35,9 @@ for idx, row in ds.iterrows():
 def item(id):
     row = ds.loc[id]
     return row['title']
-    # return 
-    # ds.loc[ds['id'] == id]['description'].tolist()[0].split(' - ')[0]
 
 # Recommend items based on similarity
 def recommend(item_id, num):
-    print("Recommending " + str(num) + " products similar to " + item(item_id) + "...")
-    print("-------")
     recs = results[item_id][:num]
     for rec in recs:
         print("Recommended: " + item(rec[1]) + " (score:" + str(rec[0]) + ")")
@@ -77,11 +71,46 @@ class CoursesInProgress(db.Model):
     user_id = db.Column(db.BigInteger)
     course_id = db.Column(db.BigInteger)
 
+def AddUser(session, u_id, nm):
+    new_user = Users(user_id=u_id,
+                     name=nm)
+    session.add(new_user)
+
+def GetUser(session, u_id):
+    users = session.query.filter_by(user_id=u_id).first()
+    return list(map(lambda user: {'user_id': user.user_id,
+                                  'name': user.name},
+                    users))
+
+def AddRating(session, u_id, c_id, rt):
+    new_rating = Ratings(user_id=u_id,
+                         course_id=c_id,
+                         rating=rt)
+    session.add(new_rating)
+
+def GetRating(session, u_id, c_id):
+    ratings = session.query.filter_by(user_id=u_id) \
+                           .filter_by(course_id=c_id).first()
+    return list(map(lambda rating: {'user_id': rating.user_id,
+                                    'course_id': rating.course_id,
+                                    'rating': rating.rating},
+                    ratings))
+
+def AddCourseInProgress(session, u_id, c_id):
+    newCIP = CoursesInProgress(user_id=u_id,
+                               course_id=c_id)
+    session.add(newCIP)
+
+def GetCourseInProgress(session, u_id):
+    CIPs = session.query.filter_by(user_id=u_id).all()
+    return list(map(lambda CIP: {'user_id': CIP.user_id,
+                                 'course_id': CIP.course_id},
+                    CIPS))
 
 @app.route("/")
 def home():
     print(Courses.query.filter_by(source='Udacity').all()[1])
-    recs = Courses.query.filter_by(source='Udacity').all()
+    recs = recommend(2,5)
     return render_template("index.html", recs=recs)
 
 
